@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  db:
+    image: mongo:6.0.5
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=url_shortener
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - ./configs/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+
+  zookeeper:
+    image: zookeeper:3.8.1
+    restart: always
+    ports:
+      - "2181:2181"
+  web:
+    restart: always
+    depends_on:
+      - db
+      - zookeeper
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - "4001:4001"
+    env_file:
+      - .env
+    links:
+      - db
+      - zookeeper
+#  mongosh --username aryahmph --password aryahmph --authenticationDatabase url_shortener
