@@ -1,7 +1,6 @@
 package zookeeper
 
 import (
-	"fmt"
 	counterModel "github.com/aryahmph/url-shortener/internal/model/counter"
 	counterRepo "github.com/aryahmph/url-shortener/internal/repository/counter"
 	"github.com/go-zookeeper/zk"
@@ -33,13 +32,11 @@ func NewZookeeperCounterRepository(conn *zk.Conn) counterRepo.Repository {
 		flags := int32(0) // No special flags
 		_, err = conn.Create(counterModel.CounterPath, []byte(strconv.Itoa(int(counter.End))), flags, zk.WorldACL(zk.PermAll))
 		if err != nil {
-			fmt.Println("create", err)
 			panic(err)
 		}
 	} else {
 		b, stat, err := conn.Get(counterModel.CounterPath)
 		if err != nil {
-			fmt.Println("get", err)
 			panic(err)
 		}
 
@@ -52,7 +49,6 @@ func NewZookeeperCounterRepository(conn *zk.Conn) counterRepo.Repository {
 		counter.Version = stat.Version + 1
 		_, err = conn.Set(counterModel.CounterPath, []byte(strconv.Itoa(int(counter.End))), -1)
 		if err != nil {
-			fmt.Println("set", err)
 			panic(err)
 		}
 

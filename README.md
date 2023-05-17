@@ -83,8 +83,13 @@ Import postman collection [file](URL%20Shortener.postman_collection.json) to you
 
 ## Testing Result
 
-This section provides an overview of the testing results obtained using [K6](https://github.com/grafana/k6), a popular
+This section provides an overview of the testing results obtained using [K6] (https://github.com/grafana/k6), a popular
 open-source load testing tool.
+
+Run [script.js](testing/script.js) file with K6
+```
+k6 run testing/script.js
+```
 
 ### Test Scenario
 

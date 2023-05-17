@@ -107,4 +107,4 @@ volumes:
   mongo2-data:
   mongo3-data:
 
-  mongosh --username aryahmph --password aryahmph --authenticationDatabase url_shortener
+#  mongosh --username aryahmph --password aryahmph --authenticationDatabase url_shortener
