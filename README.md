@@ -108,8 +108,8 @@ Scenario 1: Link Creation and Get Link (Standalone each service)
 
 - Virtual Users: 1000
 - Duration : 30s
-- Total Requests: 330.011
-- Requests per Second (RPS): 10.979/s
+- Total Requests: 330011
+- Requests per Second (RPS): 10979/s
 - Average Response Time: 813.76µs
 - 90th Percentile: 1.17ms
 - Error Rate: 0%
