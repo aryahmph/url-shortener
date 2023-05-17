@@ -4,6 +4,13 @@ This project is the backend component of a scalable URL shortener with high avai
 MongoDB, ZooKeeper, and Redis. It provides a reliable and efficient backend system for shortening long URLs into
 shorter, more manageable ones, while ensuring high availability and fault tolerance.
 
+## Background
+
+Learn to build systems with production standards that have high scalability. Based on the case study learned about the
+url shortener in the following
+article: [System Design URL Shortening Service](https://www.geeksforgeeks.org/system-design-url-shortening-service/). I
+tried to build a shorterner url system following the troubleshooting based on the guidelines in the article.
+
 ## Features
 
 - Shorten long URLs into compact, easy-to-share links.
@@ -82,6 +89,7 @@ open-source load testing tool.
 ### Test Scenario
 
 1. Scenario 1 : Link Creation and Get Link
+
 * Simulates create and get link process with 1 : 10 ratio.
 * Verifies the correctness of create and get link functionality.
 * Measures response times for create and get link requests.
