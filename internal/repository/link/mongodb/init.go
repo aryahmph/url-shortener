@@ -19,9 +19,6 @@ func NewMongodbLinkRepository(collection *mongo.Collection) linkRepo.Repository 
 }
 
 func (r mongodbLinkRepository) CreateLink(ctx context.Context, arg linkModel.Link) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	
 	_, err := r.collection.InsertOne(ctx, linkModel.Link{
 		ID:          arg.ID,
 		OriginalURL: arg.OriginalURL,
@@ -32,9 +29,6 @@ func (r mongodbLinkRepository) CreateLink(ctx context.Context, arg linkModel.Lin
 }
 
 func (r mongodbLinkRepository) GetLink(ctx context.Context, id string) (linkModel.Link, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
 	var link linkModel.Link
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&link)
 	if err == mongo.ErrNoDocuments {

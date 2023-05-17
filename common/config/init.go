@@ -9,16 +9,19 @@ type (
 	config struct {
 		Port           int    `env:"PORT,unset" envDefault:"4001"`
 		ZookeeperHosts string `env:"ZOOKEEPER_HOSTS,unset"`
+		RedisAddress   string `env:"REDIS_ADDRESS,unset"`
 
 		MongoDB
 	}
 
 	MongoDB struct {
-		MongoUser     string `env:"DATABASE_USER,unset"`
-		MongoPassword string `env:"DATABASE_PASSWORD,unset"`
-		MongoHost     string `env:"DATABASE_HOST,unset"`
-		MongoPort     string `env:"DATABASE_PORT,unset"`
-		MongoName     string `env:"DATABASE_NAME,unset"`
+		MongoUser        string `env:"DATABASE_USER,unset"`
+		MongoPassword    string `env:"DATABASE_PASSWORD,unset"`
+		MongoHostsPorts  string `env:"DATABASE_HOSTS_PORTS,unset"`
+		MongoName        string `env:"DATABASE_NAME,unset"`
+		MongoMinPoolSize int    `env:"DATABASE_MIN_POOL_SIZE,unset"`
+		MongoMaxPoolSize int    `env:"DATABASE_MAX_POOL_SIZE,unset"`
+		MongoReplicaSet  string `env:"DATABASE_REPLICA_SET,unset"`
 	}
 )
 

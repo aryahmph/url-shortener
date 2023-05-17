@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  db:
+  mongo:
     image: mongo:6.0.5
     restart: always
     ports:
@@ -10,18 +10,19 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
     volumes:
+      - mongo-data:/data/db
       - ./configs/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
-
-  zookeeper:
+  redis:
+    image: redis:7.0-alpine3.18
+    restart: always
+    ports:
+      - "6379:6379"
+  zoo:
     image: zookeeper:3.8.1
     restart: always
     ports:
       - "2181:2181"
   web:
-    restart: always
-    depends_on:
-      - db
-      - zookeeper
     build:
       context: .
       dockerfile: Dockerfile.web
@@ -29,7 +30,15 @@ services:
       - "4001:4001"
     env_file:
       - .env
+    depends_on:
+      - mongo
+      - redis
+      - zoo
     links:
-      - db
-      - zookeeper
+      - mongo
+      - redis
+      - zoo
+volumes:
+  mongo-data:
+
 #  mongosh --username aryahmph --password aryahmph --authenticationDatabase url_shortener

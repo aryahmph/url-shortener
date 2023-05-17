@@ -1,0 +1,110 @@
+version: "3.8"
+services:
+  web:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - "4001:4001"
+    env_file:
+      - .env
+    links:
+      - mongo1
+      - mongo2
+      - mongo3
+      - zoo1
+      - zoo2
+      - zoo3
+      - redis
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - zoo1
+      - zoo2
+      - zoo3
+      - redis
+  redis:
+    image: redis:7.0-alpine3.18
+    restart: always
+    ports:
+      - "6379:6379"
+  mongo1:
+    image: mongo:6.0.5
+    restart: always
+    volumes:
+      - mongo1-data:/data/db
+      - ./configs/mongodb/keyfile:/data/keyfile
+      - ./configs/mongodb/setup.sh:/scripts/setup.sh
+    environment:
+      - MONGO_INITDB_DATABASE=url_shortener
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27017:27017"
+    command: mongod --keyFile /data/keyfile --replSet rs0 --bind_ip_all
+    links:
+      - mongo2
+      - mongo3
+    depends_on:
+      - mongo2
+      - mongo3
+  mongo2:
+    image: mongo:6.0.5
+    restart: always
+    volumes:
+      - mongo2-data:/data/db
+      - ./configs/mongodb/keyfile:/data/keyfile
+    environment:
+      - MONGO_INITDB_DATABASE=url_shortener
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27018:27017"
+    command: mongod --keyFile /data/keyfile --replSet rs0 --bind_ip_all
+  mongo3:
+    restart: always
+    image: mongo:6.0.5
+    volumes:
+      - mongo3-data:/data/db
+      - ./configs/mongodb/keyfile:/data/keyfile
+    environment:
+      - MONGO_INITDB_DATABASE=url_shortener
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27019:27017"
+    command: mongod --keyFile /data/keyfile --replSet rs0 --bind_ip_all
+  zoo1:
+    image: zookeeper:3.8.1
+    hostname: zoo1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  zoo2:
+    image: zookeeper:3.8.1
+    hostname: zoo2
+    ports:
+      - "2182:2181"
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  zoo3:
+    image: zookeeper:3.8.1
+    hostname: zoo3
+    ports:
+      - "2183:2181"
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+volumes:
+  mongo1-data:
+  mongo2-data:
+  mongo3-data:
+
+  mongosh --username aryahmph --password aryahmph --authenticationDatabase url_shortener

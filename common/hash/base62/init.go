@@ -10,7 +10,10 @@ func NewBase62Manager() *Base62Manager {
 }
 
 func (Base62Manager) Hash(number uint64) string {
-	chars := "012345689abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	chars := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	if number == 0 {
+		return string(chars[0])
+	}
 	var sb strings.Builder
 	for number > 0 {
 		sb.WriteRune(rune(chars[number%62]))

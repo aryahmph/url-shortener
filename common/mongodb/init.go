@@ -5,28 +5,41 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
+	"strings"
 	"time"
 )
 
-func New(user, password, host, port, name string) *mongo.Database {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func New(user, password, hostsPorts, name string, minPool, maxPool int, replicaSet string) *mongo.Database {
+	var uriSb strings.Builder
+	uriSb.WriteString(fmt.Sprintf("mongodb://%s:%s@%s", user, password, hostsPorts))
+	opts := options.Client()
 
-	credential := options.Credential{
-		AuthMechanism: "SCRAM-SHA-256",
-		AuthSource:    name,
-		Username:      user,
-		Password:      password,
+	// Replica set enable
+	if replicaSet != "-" {
+		opts.
+			SetReplicaSet(replicaSet).
+			SetReadPreference(readpref.Secondary()).
+			// These two options should make mongodb fault-tolerant
+			SetReadConcern(readconcern.Majority()).
+			SetWriteConcern(writeconcern.New(writeconcern.WMajority()))
+	} else {
+		uriSb.WriteString("/" + name)
 	}
-	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s", user, password, host, port)
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri).
-		SetMinPoolSize(50).
-		SetMaxPoolSize(100).
-		SetMaxConnIdleTime(60 * time.Second).SetAuth(credential))
+
+	opts.ApplyURI(uriSb.String()).
+		SetMinPoolSize(uint64(minPool)).
+		SetMaxPoolSize(uint64(maxPool))
+
+	client, err := mongo.NewClient(opts)
 	if err != nil {
 		panic(err)
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	err = client.Connect(ctx)
 	if err != nil {
